@@ -11,7 +11,7 @@ services:
       - FLASK_ENV=development
     volumes:
       - .:/app                  # Mount code (dev)
-      - note_data:/app/instance # Persist database SQLite
+      - note_data:/app/data  # Persist database SQLite
     restart: always
 
 volumes:

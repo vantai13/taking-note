@@ -1,16 +1,21 @@
+# auth.py
+
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db   ##means from __init__.py import db
+from . import db
 from flask_login import login_user, login_required, logout_user, current_user
-
+import random # <-- 1. Thêm dòng này
 
 auth = Blueprint('auth', __name__)
 
+# 2. Tạo một danh sách các màu nền của Bootstrap
+BG_COLORS = ["bg-primary", "bg-success", "bg-danger", "bg-info", "bg-warning", "bg-secondary"]
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        # ... (giữ nguyên logic xử lý POST) ...
         email = request.form.get('email')
         password = request.form.get('password')
 
@@ -24,20 +29,21 @@ def login():
                 flash('Incorrect password, try again.', category='error')
         else:
             flash('Email does not exist.', category='error')
+    
+    # 3. Chọn một màu ngẫu nhiên
+    random_color = random.choice(BG_COLORS)
+    
+    # 4. Truyền biến màu vào template
+    return render_template("login.html", user=current_user, nav_color=random_color)
 
-    return render_template("login.html", user=current_user)
 
-
-@auth.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('auth.login'))
+# ... (route logout giữ nguyên) ...
 
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
+        # ... (giữ nguyên logic xử lý POST) ...
         email = request.form.get('email')
         first_name = request.form.get('firstName')
         password1 = request.form.get('password1')
@@ -56,11 +62,15 @@ def sign_up():
             flash('Password must be at least 7 characters.', category='error')
         else:
             new_user = User(email=email, first_name=first_name, password=generate_password_hash(
-                password1, method='pbkdf2:sha256'))
+                password1, method='pbkdf2:sha266'))
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
             return redirect(url_for('views.home'))
-
-    return render_template("sign_up.html", user=current_user)
+    
+    # 3. Chọn một màu ngẫu nhiên
+    random_color = random.choice(BG_COLORS)
+    
+    # 4. Truyền biến màu vào template
+    return render_template("sign_up.html", user=current_user, nav_color=random_color)

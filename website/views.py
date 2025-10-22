@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from .models import Note
 from . import db
 import json
+from flask import jsonify
 
 views = Blueprint('views', __name__)
 
@@ -35,3 +36,7 @@ def delete_note():
             db.session.commit()
 
     return jsonify({})
+
+@views.route('/health')
+def health_check():
+    return jsonify({"status": "healthy"}), 200
