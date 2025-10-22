@@ -9,10 +9,34 @@ services:
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=development
+      - DB_USER=user-note
+      - DB_PASSWORD=password-note
+      - DB_ENDPOINT=db
+      - DB_NAME=takingnoteapp
     volumes:
-      - .:/app                  # Mount code (dev)
-      - note_data:/app/data  # Persist database SQLite
+      - .:/app
     restart: always
+    depends_on:
+      db:
+        # ✅ Yêu cầu "web" phải chờ cho đến khi "db" healthy
+        condition: service_healthy 
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      - MYSQL_DATABASE=takingnoteapp
+      - MYSQL_USER=user-note
+      - MYSQL_PASSWORD=password-note
+      - MYSQL_ROOT_PASSWORD=rootpassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+    # ✅ Thêm healthcheck để kiểm tra khi nào MySQL sẵn sàng
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
 volumes:
-  note_data:
+  mysql_data:

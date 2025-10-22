@@ -1,16 +1,26 @@
+# __init__.py
+
+import os # <-- 1. Thêm import này
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 
 db = SQLAlchemy()
-DB_NAME = "database.db"
-DB_PATH = f"/app/data/{DB_NAME}"
+
+# 2. Lấy thông tin kết nối từ biến môi trường
+DB_USERNAME = os.environ.get("DB_USER")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_ENDPOINT = os.environ.get("DB_ENDPOINT") # Đây sẽ là tên service "db" trong Docker
+DB_NAME = os.environ.get("DB_NAME")
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'hjshjhdjah kjshkjdhjs'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
+    
+    # 3. Tạo chuỗi kết nối MySQL
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_ENDPOINT}/{DB_NAME}'
+    
     db.init_app(app)
 
     from .views import views
@@ -22,7 +32,7 @@ def create_app():
     from .models import User, Note
     
     with app.app_context():
-        db.create_all()
+        db.create_all() # Lệnh này sẽ tự tạo các bảng trong MySQL
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
@@ -34,8 +44,4 @@ def create_app():
 
     return app
 
-
-def create_database(app):
-    if not path.exists('website/' + DB_NAME):
-        db.create_all(app=app)
-        print('Created Database!')
+# 4. Xóa hàm create_database() cũ đi vì nó không còn cần thiết

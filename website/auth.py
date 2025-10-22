@@ -62,7 +62,7 @@ def sign_up():
             flash('Password must be at least 7 characters.', category='error')
         else:
             new_user = User(email=email, first_name=first_name, password=generate_password_hash(
-                password1, method='pbkdf2:sha266'))
+                password1, method='pbkdf2:sha256'))
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
@@ -74,3 +74,10 @@ def sign_up():
     
     # 4. Truyền biến màu vào template
     return render_template("sign_up.html", user=current_user, nav_color=random_color)
+
+@auth.route('/logout')
+@login_required # Đảm bảo chỉ người đã đăng nhập mới logout được
+def logout():
+    logout_user() # Xóa session của người dùng
+    flash('You have been logged out.', category='success') # Thông báo (tùy chọn)
+    return redirect(url_for('auth.login')) # Chuyển về trang đăng nhập
