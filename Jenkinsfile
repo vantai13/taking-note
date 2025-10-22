@@ -14,12 +14,12 @@ pipeline {
         NEW_REVISION = ""
     }
     stages {
-        stage('Checkout') {
-            steps {
+        // stage('Checkout') {
+        //     steps {
                 
-                git 'https://github.com/vantai13/taking-note.git' 
-            }
-        }
+        //         git 'https://github.com/vantai13/taking-note.git' 
+        //     }
+        // }
 
         stage('Build') {
             steps {
