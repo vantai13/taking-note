@@ -38,6 +38,10 @@ def delete_note():
 
     return jsonify({})
 
+@views.route('/health')
+def health_check():
+    return jsonify({"status": "healthy"}), 200
+
 @views.route('/heavy')
 @login_required # Yêu cầu đăng nhập để tránh lạm dụng
 def heavy_task():
