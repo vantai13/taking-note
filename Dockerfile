@@ -21,4 +21,4 @@ ENV FLASK_ENV=production
 EXPOSE 5000
 
 # Chạy ứng dụng Flask
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:5000", "app:app"]
