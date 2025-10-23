@@ -4,6 +4,7 @@ from .models import Note
 from . import db
 import json
 from flask import jsonify
+import time
 
 views = Blueprint('views', __name__)
 
@@ -37,6 +38,19 @@ def delete_note():
 
     return jsonify({})
 
-@views.route('/health')
-def health_check():
-    return jsonify({"status": "healthy"}), 200
+@views.route('/heavy')
+@login_required # Yêu cầu đăng nhập để tránh lạm dụng
+def heavy_task():
+    """
+    Route tạm thời để mô phỏng tác vụ tốn CPU cho việc test Auto Scaling.
+    """
+    start_time = time.time()
+    count = 0
+    # Chạy vòng lặp trong khoảng 1.0 giây (có thể điều chỉnh)
+    while (time.time() - start_time) < 1.0: 
+        count += 1
+        # Thực hiện phép tính đơn giản lặp đi lặp lại
+        # result = count * count / (count + 1) # Có thể thêm nếu cần nặng hơn
+
+    print(f"Heavy task completed {count} iterations.") # In ra log để biết nó chạy
+    return jsonify({"message": f"Heavy task completed after {count} iterations."}), 200
