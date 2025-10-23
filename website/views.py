@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from .models import Note
 from . import db
@@ -22,6 +22,8 @@ def home():
             db.session.add(new_note) #adding the note to the database 
             db.session.commit()
             flash('Note added!', category='success')
+            # Redirect sau khi tạo note thành công để tránh lỗi refresh
+            return redirect(url_for('views.home'))
 
     return render_template("home.html", user=current_user)
 
